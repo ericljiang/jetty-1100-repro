@@ -3,12 +3,27 @@
  */
 package jetty.repro;
 
-public class App {
-    public String getGreeting() {
-        return "Hello world.";
-    }
+import org.eclipse.jetty.annotations.AnnotationConfiguration;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.webapp.Configuration;
+import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.webapp.WebInfConfiguration;
 
+public class App {
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        final Server server = new Server(7070);
+        final WebAppContext context = new WebAppContext("/", "/");
+        context.setConfigurations(new Configuration[] {
+                new AnnotationConfiguration(),
+                new WebInfConfiguration()
+        });
+        context.setExtraClasspath("build/classes");
+        server.setHandler(context);
+        try {
+            server.start();
+            server.join();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
